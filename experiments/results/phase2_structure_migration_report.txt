@@ -1,0 +1,163 @@
+================================================================================
+PHASE 2C — PROJECT STRUCTURE MIGRATION REPORT
+================================================================================
+Date/Time: 2026-09-27 04:35:00 UTC+05:30
+Migration Type: Pure Structural Refactoring (Zero ML/Data Logic Changes)
+
+--------------------------------------------------------------------------------
+1. OLD STRUCTURE VS. NEW TARGET STRUCTURE
+--------------------------------------------------------------------------------
+Old Root Structure:
+  - notebook/ (containing unstandardized numbered notebooks and scratch files)
+  - src/business_entity_resolution/ (missing utils/ submodule)
+  - scripts/ (missing standard train.py, predict.py, validate_submission.py entry points)
+  - tests/ (MISSING)
+  - requirements.txt (MISSING)
+
+New Target Structure (Achieved):
+  entity-reso/
+  ├── dataset/
+  │   ├── train/
+  │   └── test/
+  ├── notebooks/
+  │   ├── 01_eda.ipynb
+  │   ├── 02_baseline.ipynb
+  │   ├── 03_matching_experiments.ipynb
+  │   ├── 04_final_inference.ipynb
+  │   └── archive/
+  │       ├── 02_baseline_exact_match_scratch.ipynb
+  │       ├── 03_baseline_v1_blocking.ipynb
+  │       └── train_exploration.ipynb
+  ├── output/
+  │   ├── candidate_pairs.tsv
+  │   └── matching_results.tsv
+  ├── src/
+  │   └── business_entity_resolution/
+  │       ├── blocking/
+  │       ├── data/
+  │       ├── evaluation/
+  │       ├── features/
+  │       ├── models/
+  │       ├── utils/
+  │       └── pipeline.py
+  ├── scripts/
+  │   ├── train.py
+  │   ├── predict.py
+  │   ├── generate_full_submission.py
+  │   ├── validate_submission.py
+  │   └── ...
+  ├── tests/
+  │   ├── __init__.py
+  │   ├── test_preprocessing.py
+  │   ├── test_blocking.py
+  │   ├── test_features.py
+  │   ├── test_models.py
+  │   └── test_validation.py
+  ├── README.md
+  ├── requirements.txt
+  └── .gitignore
+
+--------------------------------------------------------------------------------
+2. FILES MOVED AND RENAMED
+--------------------------------------------------------------------------------
+Canonical Notebooks:
+  - notebook/01_eda.ipynb                     -> notebooks/01_eda.ipynb
+  - notebook/02_baseline_exact_match.ipynb     -> notebooks/02_baseline.ipynb
+  - notebook/04_matching_experiments.ipynb    -> notebooks/03_matching_experiments.ipynb
+  - notebook/05_final_inference.ipynb         -> notebooks/04_final_inference.ipynb
+
+Archived Legacy/Scratch Notebooks (Preserved in notebooks/archive/):
+  - notebook/02_baseline_exact_match1..ipynb   -> notebooks/archive/02_baseline_exact_match_scratch.ipynb
+  - notebook/03_baseline_v1_blocking.ipynb    -> notebooks/archive/03_baseline_v1_blocking.ipynb
+  - notebook/train.ipynb                       -> notebooks/archive/train_exploration.ipynb
+
+--------------------------------------------------------------------------------
+3. DUPLICATE BASELINE NOTEBOOK DECISION
+--------------------------------------------------------------------------------
+Comparison:
+  - notebook/02_baseline_exact_match.ipynb: Canonical clean implementation using modular
+    DataLoader, preprocess_dataframe, and evaluate_predictions.
+  - notebook/02_baseline_exact_match1..ipynb: Preliminary scratch notebook containing raw
+    in-line script snippets, exploratory Pandas code, and a filename typo (double dot '..ipynb').
+
+Decision:
+  - Designated '02_baseline_exact_match.ipynb' as canonical 'notebooks/02_baseline.ipynb'.
+  - Safely archived '02_baseline_exact_match1..ipynb' as 'notebooks/archive/02_baseline_exact_match_scratch.ipynb'
+    so that zero exploratory code was lost while eliminating root notebook clutter.
+
+--------------------------------------------------------------------------------
+4. NEW COMPONENTS CREATED
+--------------------------------------------------------------------------------
+Package Submodules:
+  - src/business_entity_resolution/utils/__init__.py (project root resolution helper)
+
+Thin Script Entry Points:
+  - scripts/train.py (CLI interface invoking EntityResolutionPipeline.train())
+  - scripts/predict.py (CLI interface invoking EntityResolutionPipeline.run())
+  - scripts/validate_submission.py (CLI forwarding to utils/validate_submission.py)
+
+Unit Test Suite:
+  - tests/__init__.py
+  - tests/test_preprocessing.py (tests normalize_text, clean_business_name, normalize_address)
+  - tests/test_blocking.py (tests key generation, indexing, retrieval)
+  - tests/test_features.py (verifies 22 feature extractions)
+  - tests/test_models.py (tests model.joblib deserialization, threshold 0.70, LGBMClassifier)
+  - tests/test_validation.py (tests submission validator headers and file checks)
+
+Environment Pinning:
+  - requirements.txt (pinned pandas, numpy, scipy, scikit-learn, lightgbm, rapidfuzz, joblib)
+
+--------------------------------------------------------------------------------
+5. FILES INTENTIONALLY PRESERVED WITHOUT MODIFICATION
+--------------------------------------------------------------------------------
+  - All 7 TSV datasets in dataset/train/ and dataset/test/
+  - experiments/results/model.joblib & final_submission/model.joblib
+  - experiments/results/metrics.json & final_submission/metrics.json
+  - final_submission/experiment_results.csv
+  - output/matching_results.tsv & output/candidate_pairs.tsv
+  - utils/validate_submission.py
+  - Core ML logic in src/business_entity_resolution/{blocking, data, evaluation, features, models, pipeline.py}
+
+--------------------------------------------------------------------------------
+6. POST-MIGRATION VALIDATION RESULTS
+--------------------------------------------------------------------------------
+1. Unit Tests: 9/9 passed in 0.071s ('python -m unittest discover tests')
+2. Model Integrity: experiments/results/model.joblib successfully loads LGBMClassifier with 22 features, threshold 0.70.
+3. Feature Integrity: 22 engineered features verified identical.
+4. Submission Validator: scripts/validate_submission.py executed successfully.
+5. CLI Help Checks: scripts/train.py --help and scripts/predict.py --help passed.
+6. Dataset Integrity: 100% untouched.
+
+--------------------------------------------------------------------------------
+7. GIT STATUS
+--------------------------------------------------------------------------------
+Branch: main
+Changes not staged for commit:
+  deleted: notebook/01_eda.ipynb
+  deleted: notebook/02_baseline_exact_match.ipynb
+  deleted: notebook/02_baseline_exact_match1..ipynb
+  deleted: notebook/03_baseline_v1_blocking.ipynb
+  deleted: notebook/04_matching_experiments.ipynb
+  deleted: notebook/05_final_inference.ipynb
+  deleted: notebook/train.ipynb
+
+Untracked files:
+  notebooks/
+  requirements.txt
+  scripts/predict.py
+  scripts/train.py
+  scripts/validate_submission.py
+  src/business_entity_resolution/utils/
+  tests/
+
+--------------------------------------------------------------------------------
+8. CONFIRMATION
+--------------------------------------------------------------------------------
+CONFIRMED:
+- Zero model retraining was performed.
+- Zero model parameters or weights were altered.
+- Zero feature engineering or blocking rules were changed.
+- Threshold remains strictly 0.70.
+- Datasets are 100% untouched.
+- Structural migration is COMPLETE and VERIFIED.
+================================================================================
