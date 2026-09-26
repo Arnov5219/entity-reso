@@ -1,0 +1,13 @@
+{
+  "macro_f05": 0.943159021146083,
+  "macro_f1": 0.9166003307966544,
+  "macro_precision": 0.9687654761904761,
+  "macro_recall": 0.8885301587301587,
+  "exact_accuracy": 0.663,
+  "total_s1_entities": 2000,
+  "total_predictions": 6321,
+  "total_tp": 6195,
+  "total_fp": 126,
+  "total_fn": 770,
+  "pairwise_accuracy": 0.9990858982221892
+}
