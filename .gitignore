@@ -2,35 +2,32 @@
 __pycache__/
 *.py[cod]
 *.pyo
+
+# Virtual environments
 .venv/
 venv/
 env/
 
-# Jupyter
+# Jupyter temporary files
 .ipynb_checkpoints/
 
-# Environment / secrets
+# Large datasets
+dataset/train/
+dataset/test/
+
+# Generated model artifacts
+experiments/results/*.joblib
+experiments/results/*.pkl
+final_submission/*.joblib
+final_submission/*.pkl
+
+# Generated metrics and outputs
+output/*
+
+# Keep the output directory in Git
+!output/.gitkeep
+
+# Local environment files
 .env
 .env.*
 !.env.example
-
-# IDE
-.vscode/
-
-# Python build
-build/
-dist/
-*.egg-info/
-
-# Logs
-*.log
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Temporary files
-*.tmp
-*.temp
-
-dataset/

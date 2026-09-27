@@ -4,11 +4,15 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from business_entity_resolution.models.matcher import EntityMatcher
+from business_entity_resolution.models.gbdt import EntityMatcher, GBDTMatcher
+from business_entity_resolution.models.matcher import EntityMatcher as AliasedMatcher
 
 
 class TestModels(unittest.TestCase):
     def test_load_production_model(self):
+        self.assertIs(EntityMatcher, AliasedMatcher)
+        self.assertIs(EntityMatcher, GBDTMatcher)
+
         model_path = Path("experiments/results/model.joblib")
         if not model_path.exists():
             model_path = Path("../experiments/results/model.joblib")

@@ -5,12 +5,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from business_entity_resolution.blocking.blocker import EntityBlocker
-from business_entity_resolution.features.extractor import FeatureExtractor
+from business_entity_resolution.features.feature_engineering import FeatureExtractor
+from business_entity_resolution.features.extractor import FeatureExtractor as AliasedExtractor
 
 
 class TestFeatureExtraction(unittest.TestCase):
     def test_22_features(self):
         self.assertEqual(len(FeatureExtractor.FEATURE_NAMES), 22)
+        self.assertIs(FeatureExtractor, AliasedExtractor)
 
         blocker = EntityBlocker()
         _, s1_meta = blocker.get_blocking_keys_and_meta("US", "Zephay Labs Inc", "2621 Cotten Road, TX 75701")

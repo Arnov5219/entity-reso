@@ -1,3 +1,3 @@
-from .matcher import EntityMatcher
+from .gbdt import EntityMatcher, GBDTMatcher
 
-__all__ = ["EntityMatcher"]
+__all__ = ["EntityMatcher", "GBDTMatcher"]
